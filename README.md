@@ -21,9 +21,9 @@ You can use $ git fetchto fetch a list of other people's branches.
 
 Each new feature a person is working on should be made in a new branch. These branches should ideally never be more than a few days old as the features should be small and quick to implement. The person working on the feature will make a pull-request to merge the finished feature into the master branch once it's completed. This way the master branch will only ever contain working code.
 
-# How to use GitHub with Unity 
+# Link to Trello
 
-https://www.youtube.com/watch?v=qpXxcvS-g3g
+https://trello.com/b/mqpnb0Lw/sims2020-sidequest-moscow
 
 
 # Quickstart for Cloud Anchors in Unity for Android
