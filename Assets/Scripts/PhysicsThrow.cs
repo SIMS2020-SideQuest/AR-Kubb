@@ -9,19 +9,17 @@ using UnityEngine;
 public class PhysicsThrow : MonoBehaviour
 {
     // Our thrown object
-    public Rigidbody obj;
+    Rigidbody obj;
 
     // Start position Vector
-    public Vector2 startPos, endPos, direction;
-
-    // Boolean for moving object
-    public bool isMoving;
+    Vector2 startPos, endPos, direction;
 
     // Powers in 3D space
-    public float powerXY = 1f,powerZ = 50f;
+    [SerializeField]
+    float powerXY = 1f, powerZ = 20f;
 
     // Time
-    public float TouchStart, TouchEnd, TouchInterval;
+    float TouchStart, TouchEnd, TouchInterval;
 
     // Start is called before the first frame update
     void Start()
@@ -56,7 +54,9 @@ public class PhysicsThrow : MonoBehaviour
             direction = startPos - endPos;
             obj.isKinematic = false;
             // add force in 3D space
-            obj.AddForce(-direction.x * powerXY, -direction.y * powerXY, powerZ / TouchInterval);
+            obj.AddForce(direction.x * powerXY, direction.y * powerXY, powerZ / TouchInterval);
+            //removes object after 3s
+            //Destroy (gameObject, 3f);
         }
     }
 } 
