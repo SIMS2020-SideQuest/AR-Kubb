@@ -1,13 +1,23 @@
-﻿ using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PhysicsThrow : MonoBehaviour
 {
+    [SerializeField]
+    GameObject ARCam;
+
+    [SerializeField]
+    ARSessionOrigin m_SessionOrigin;
+
     // Our thrown object
     Rigidbody obj;
 
@@ -16,16 +26,20 @@ public class PhysicsThrow : MonoBehaviour
 
     // Powers in 3D space
     [SerializeField]
-    float powerXY = 1f, powerZ = 20f;
+    float powerXY = 1f, powerZ = 0.1f, m_ThrowForce = 5f;
 
+    //public Vector3 m_StickCameraOffset = new Vector3(0f, -1.4f, 2f);
     // Time
     float TouchStart, TouchEnd, TouchInterval;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
         // Get engine physics properties
         obj = GetComponent<Rigidbody>();
+        m_SessionOrigin=GameObject.Find("AR Session Origin").GetComponent<ARSessionOrigin>();
+        ARCam = m_SessionOrigin.transform.Find("AR Camera").gameObject;
+        transform.parent = ARCam.transform;
+        //resetStick();
     }
 
     // Update is called once per frame
@@ -54,9 +68,23 @@ public class PhysicsThrow : MonoBehaviour
             direction = startPos - endPos;
             obj.isKinematic = false;
             // add force in 3D space
-            obj.AddForce(direction.x * powerXY, direction.y * powerXY, powerZ / TouchInterval);
+            //obj.AddForce(direction.x * powerXY, direction.y * powerXY, powerZ / TouchInterval);
+            obj.AddForce(ARCam.transform.forward * m_ThrowForce / TouchInterval + ARCam.transform.up * direction.y * powerXY + ARCam.transform.right * direction.x * powerXY);
             //removes object after 3s
             //Destroy (gameObject, 3f);
         }
     }
+/*
+    private void resetStick()
+    {
+       obj.mass = 0;
+       obj.useGravity = false;
+       obj.velocity = Vector3.zero;
+       obj.angularVelocity = Vector3.zero;
+       TouchEnd = 0.0f; 
+
+       Vector3 stickPos = ARCam.transform.position + ARCam.transform.forward * m_StickCameraOffset.z + ARCam.transform.up * m_StickCameraOffset.y;
+       transform.position = stickPos;
+    }
+*/
 } 
