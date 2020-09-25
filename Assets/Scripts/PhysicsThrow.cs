@@ -1,33 +1,44 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PhysicsThrow : MonoBehaviour
 {
+    [SerializeField]
+    GameObject ARCam;
+
+    [SerializeField]
+    ARSessionOrigin m_SessionOrigin;
+
     // Our thrown object
-    public Rigidbody obj;
+    Rigidbody obj;
 
     // Start position Vector
-    public Vector2 startPos, endPos, direction;
-
-    // Boolean for moving object
-    public bool isMoving;
+    Vector2 startPos, endPos, direction;
 
     // Powers in 3D space
-    public float powerXY = 1f,powerZ = 50f;
+    [SerializeField]
+    float powerXY = 1f, powerZ = 0.1f, m_ThrowForce = 5f;
 
+    //public Vector3 m_StickCameraOffset = new Vector3(0f, -1.4f, 2f);
     // Time
-    public float TouchStart, TouchEnd, TouchInterval;
+    float TouchStart, TouchEnd, TouchInterval;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
         // Get engine physics properties
         obj = GetComponent<Rigidbody>();
+        m_SessionOrigin=GameObject.Find("AR Session Origin").GetComponent<ARSessionOrigin>();
+        ARCam = m_SessionOrigin.transform.Find("AR Camera").gameObject;
+        transform.parent = ARCam.transform;
     }
 
     // Update is called once per frame
@@ -54,9 +65,11 @@ public class PhysicsThrow : MonoBehaviour
 
             // Calculate direction of object in 2D plane
             direction = startPos - endPos;
+            obj.isKinematic = false;
 
             // add force in 3D space
-            obj.AddForce(-direction.x * powerXY, -direction.y * powerXY, powerZ / TouchInterval);
+            obj.AddForce(ARCam.transform.right + direction.x * powerXY, ARCam.transform.up + direction.y * powerXY,ARCam.transform.forward / TouchInterval);
+           // obj.AddForce(ARCam.transform.forward * m_ThrowForce / TouchInterval + ARCam.transform.up * direction.y * powerXY + ARCam.transform.right * direction.x * powerXY);
         }
     }
-}
+} 
