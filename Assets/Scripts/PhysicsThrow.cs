@@ -39,6 +39,7 @@ public class PhysicsThrow : MonoBehaviour
         m_SessionOrigin=GameObject.Find("AR Session Origin").GetComponent<ARSessionOrigin>();
         ARCam = m_SessionOrigin.transform.Find("AR Camera").gameObject;
         transform.parent = ARCam.transform;
+        //resetStick();
     }
 
     // Update is called once per frame
@@ -66,10 +67,24 @@ public class PhysicsThrow : MonoBehaviour
             // Calculate direction of object in 2D plane
             direction = startPos - endPos;
             obj.isKinematic = false;
-
             // add force in 3D space
-            obj.AddForce(ARCam.transform.right + direction.x * powerXY, ARCam.transform.up + direction.y * powerXY,ARCam.transform.forward / TouchInterval);
-           // obj.AddForce(ARCam.transform.forward * m_ThrowForce / TouchInterval + ARCam.transform.up * direction.y * powerXY + ARCam.transform.right * direction.x * powerXY);
+            //obj.AddForce(direction.x * powerXY, direction.y * powerXY, powerZ / TouchInterval);
+            obj.AddForce(ARCam.transform.forward * m_ThrowForce / TouchInterval + ARCam.transform.up * direction.y * powerXY + ARCam.transform.right * direction.x * powerXY);
+            //removes object after 3s
+            //Destroy (gameObject, 3f);
         }
     }
+/*
+    private void resetStick()
+    {
+       obj.mass = 0;
+       obj.useGravity = false;
+       obj.velocity = Vector3.zero;
+       obj.angularVelocity = Vector3.zero;
+       TouchEnd = 0.0f; 
+
+       Vector3 stickPos = ARCam.transform.position + ARCam.transform.forward * m_StickCameraOffset.z + ARCam.transform.up * m_StickCameraOffset.y;
+       transform.position = stickPos;
+    }
+*/
 } 
