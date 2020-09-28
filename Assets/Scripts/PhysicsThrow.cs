@@ -20,7 +20,7 @@ public class PhysicsThrow : MonoBehaviour
 
     // Our thrown object
     Rigidbody obj;
-
+    
     // Start position Vector
     Vector2 startPos, endPos, direction;
 
@@ -70,7 +70,7 @@ public class PhysicsThrow : MonoBehaviour
             obj.isKinematic = false;
 
             // add force in 3D space (z,y,x)
-            obj.AddForce((transform.forward * m_ThrowForce / TouchInterval) + (transform.up * direction.y * powerXY) + (transform.right * direction.x * powerXY));
+            obj.AddForce((obj.transform.forward * m_ThrowForce / TouchInterval) + (transform.up * direction.y * powerXY) + (transform.right * direction.x * powerXY),ForceMode.Impulse);
         }
     }
 } 
