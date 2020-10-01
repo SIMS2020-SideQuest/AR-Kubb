@@ -11,6 +11,7 @@ using UnityEngine.XR.ARSubsystems;
 using Debug = UnityEngine.Debug;
 
 [RequireComponent(typeof(Rigidbody))]
+
 public class PhysicsThrow : MonoBehaviour
 {
     [SerializeField]
@@ -27,10 +28,13 @@ public class PhysicsThrow : MonoBehaviour
 
     // Powers in 3D space
     [SerializeField]
-    float powerXY = 0.01f, m_ThrowForce = 0.4f;
+    float powerXY = 0.01f, m_ThrowForce = 3f;
 
     // Time
     float TouchStart, TouchEnd, TouchInterval;
+
+    // Holding object
+    bool holding;
 
     // Start is called before the first frame update
     void Start(){
@@ -42,6 +46,8 @@ public class PhysicsThrow : MonoBehaviour
 
         ARCam = m_SessionOrigin.transform.Find("AR Camera").gameObject;
         transform.parent = ARCam.transform;
+
+        holding = false;
     }
 
     // Update is called once per frame
@@ -68,9 +74,11 @@ public class PhysicsThrow : MonoBehaviour
             Debug.Log("forward: "+transform.forward);
             //Debug.Log("Force vector3: "+obj.AddForce((transform.forward*m_ThrowForce) + (transform.up*direction.y*powerXY) + (transform.right*direction.x*powerXY)));            
             
-
+            if((endPos - startPos).Equals(Vector2.zero)) {
+                m_ThrowForce = 0.0001f;
+            }
             // add force in 3D space (z,y,x)
-            obj.AddForce((transform.forward * m_ThrowForce / TouchInterval) + (transform.up * direction.y * powerXY) + (transform.right * direction.x * powerXY),ForceMode.Impulse);
+            obj.AddForce((ARCam.transform.forward * m_ThrowForce / TouchInterval) + (ARCam.transform.up * direction.y * powerXY) + (ARCam.transform.right * direction.x * powerXY),ForceMode.Impulse);
         }
 
         // Checks whether screen is touched
@@ -94,10 +102,23 @@ public class PhysicsThrow : MonoBehaviour
 
             // Calculate direction of object in 2D plane
             direction = startPos - endPos;
-            //obj.isKinematic = false;
+            obj.isKinematic = false;
+
+            // Calculate the speed of object
+            CalcObjectSpeed();
 
             // add force in 3D space (z,y,x)
-            obj.AddForce((transform.forward * m_ThrowForce / TouchInterval) + (transform.up * direction.y * powerXY) + (transform.right * direction.x * powerXY),ForceMode.Impulse);
+            obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * direction.y * powerXY) + (ARCam.transform.right * direction.x * powerXY),ForceMode.Impulse);
         }
+    }
+    void CalcObjectSpeed()
+    {
+        float flick = direction.magnitude;
+        float ObjectVelocity;
+        
+        if  ( TouchInterval > 0 && !((endPos - startPos).Equals(Vector2.zero)) )
+        {
+            ObjectVelocity = flick / ( flick - TouchInterval);
+        }    
     }
 }
