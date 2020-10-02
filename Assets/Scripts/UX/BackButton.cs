@@ -3,11 +3,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.UI;
 //UnityEngine.XR.ARFoundation.ARKubb
-//SIMS.SideQuest.ARKubb
-namespace UnityEngine.XR.ARFoundation.ARKubb
-{
+namespace SIMS.SideQuest.ARKubb{
     public class BackButton : MonoBehaviour{
-
         [SerializeField]
         GameObject m_BackButton;
         public GameObject backButton{
@@ -15,18 +12,16 @@ namespace UnityEngine.XR.ARFoundation.ARKubb
             set => m_BackButton = value;
         }
 
-        //Statement speaks for itself
+        //Checks if meanu scene can be loaded
         void Start(){
-            if (Application.CanStreamedLevelBeLoaded("Menu")){
+            if (Application.CanStreamedLevelBeLoaded("Menu"))
                 m_BackButton.SetActive(true);
-            }
         }
 
         //Waits for backbutton on phone to be pressed
         void Update(){
-            if (Input.GetKeyDown(KeyCode.Escape)){
+            if (Input.GetKeyDown(KeyCode.Escape))
                 BackButtonPressed();
-            }
         }
 
         public void BackButtonPressed(){

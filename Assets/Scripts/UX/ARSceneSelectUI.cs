@@ -6,9 +6,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Management;
 
-namespace UnityEngine.XR.ARFoundation.ARKubb{
+namespace SIMS.SideQuest.ARKubb{
     public class ARSceneSelectUI : MonoBehaviour{
-       
+        /*
         [SerializeField]
         Scrollbar m_HorizontalScrollBar;
         public Scrollbar horizontalScrollBar{
@@ -22,6 +22,7 @@ namespace UnityEngine.XR.ARFoundation.ARKubb{
             get => m_VerticalScrollBar;
             set => m_VerticalScrollBar = value;
         }
+        */
 
         [SerializeField]
         GameObject m_MainMenu;
@@ -31,7 +32,7 @@ namespace UnityEngine.XR.ARFoundation.ARKubb{
         }
 
         void Start(){
-            ScrollToStartPosition();
+            //ScrollToStartPosition();
         }
 
         static void LoadScene(string sceneName){
@@ -54,12 +55,13 @@ namespace UnityEngine.XR.ARFoundation.ARKubb{
         public void BackButtonPressed(){
             ActiveMenu.currentMenu = MenuType.Menu;
             m_MainMenu.SetActive(true);
-            ScrollToStartPosition();
+            //ScrollToStartPosition();
         }
 
-        void ScrollToStartPosition(){
+        /*void ScrollToStartPosition(){
             m_HorizontalScrollBar.value = 0;
             m_VerticalScrollBar.value = 1;
         }
+        */
     }
 }
