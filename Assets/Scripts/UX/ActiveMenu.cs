@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEngine.XR.ARFoundation.ARKubb{
+namespace SIMS.SideQuest.ARKubb{
     public enum MenuType{
         Menu,
         Help,
