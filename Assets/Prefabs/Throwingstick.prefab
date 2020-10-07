@@ -143,7 +143,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ARCam: {fileID: 0}
   m_SessionOrigin: {fileID: 0}
-  powerXY: 1
-  powerZ: 0.1
-  m_ThrowForce: 5
-  m_StickCameraOffset: {x: 0, y: -1.4, z: 2}
+  powerX: 0.015
+  powerY: 0.001
+  m_ThrowForce: 0

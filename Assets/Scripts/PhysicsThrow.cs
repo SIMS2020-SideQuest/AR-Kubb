@@ -11,7 +11,6 @@ using UnityEngine.XR.ARSubsystems;
 using Debug = UnityEngine.Debug;
 
 [RequireComponent(typeof(Rigidbody))]
-
 public class PhysicsThrow : MonoBehaviour
 {
     [SerializeField]
@@ -28,10 +27,15 @@ public class PhysicsThrow : MonoBehaviour
 
     // Powers in 3D space
     [SerializeField]
-    float powerXY = 0.01f, m_ThrowForce = 3f;
+    float powerX = 0.015f, powerY = 0.001f, m_ThrowForce = 0;
+
+
+    // Average flick speed
+
+    float flickSpeed = 0.2f;
 
     // Time
-    float TouchStart, TouchEnd, TouchInterval;
+    float TouchStart, TouchEnd, TouchInterval, TouchTemp;
 
     // Holding object
     bool holding;
@@ -55,30 +59,53 @@ public class PhysicsThrow : MonoBehaviour
     {
 
         if(Input.GetMouseButtonDown(0)) {
+
+            // Record start time of swipe
             TouchStart = Time.time;
+
+            // Get mouse position of swipe
             startPos = Input.mousePosition;
         }
 
         if(Input.GetMouseButtonUp(0)) {
-            TouchEnd = Time.time;
-            TouchInterval = TouchEnd - TouchStart;
-            endPos = Input.mousePosition;
-            direction = endPos - startPos;
-            obj.isKinematic = false;
-            Debug.Log("TouchInterval: "+TouchInterval);
-            Debug.Log("startPos: "+startPos);
-            Debug.Log("endPos: "+endPos);
-                        Debug.Log("Direction.X: "+direction.x);
-                                    Debug.Log("Direction.Y: "+direction.y);            
-            Debug.Log("Direction: "+direction);
-            Debug.Log("forward: "+transform.forward);
-            //Debug.Log("Force vector3: "+obj.AddForce((transform.forward*m_ThrowForce) + (transform.up*direction.y*powerXY) + (transform.right*direction.x*powerXY)));            
             
-            if((endPos - startPos).Equals(Vector2.zero)) {
-                m_ThrowForce = 0.0001f;
+            // Record end time of swipe ended
+            TouchEnd = Time.time;
+            
+            // Swipe interval
+            TouchInterval = TouchEnd - TouchStart;
+
+            // Mouse position of end swipe
+            endPos = Input.mousePosition;
+
+            // Get 2D direction of swipe
+            direction = endPos - startPos;
+
+            obj.isKinematic = false;
+            
+            // If subtraction equals empty Vector2(0f,0f,0f) don't perform force
+            if( !(endPos - startPos).Equals(Vector2.zero) )
+            {
+                // Calculate Object speed
+                CalcObjectSpeed();
+
+                // Object rotation
+                transform.Rotate(0.0f,0.0f,m_ThrowForce,Space.Self);
+
+                // Add force in 3D space (z,y,x)
+                obj.AddForce((transform.forward * m_ThrowForce) + (transform.up * direction.y * powerY) + 
+                (transform.right * direction.x * powerX), ForceMode.Impulse);                
             }
-            // add force in 3D space (z,y,x)
-            obj.AddForce((ARCam.transform.forward * m_ThrowForce / TouchInterval) + (ARCam.transform.up * direction.y * powerXY) + (ARCam.transform.right * direction.x * powerXY),ForceMode.Impulse);
+
+            // Get temporary touch time
+            if(TouchStart > 0)
+                TouchTemp = Time.time - TouchStart;
+
+            // If suspecting holding, reset start time and position
+            if(TouchTemp > flickSpeed) {
+                TouchStart = Time.time;
+                startPos = Input.mousePosition;
+            }    
         }
 
         // Checks whether screen is touched
@@ -101,24 +128,45 @@ public class PhysicsThrow : MonoBehaviour
             endPos = Input.GetTouch(0).position;
 
             // Calculate direction of object in 2D plane
-            direction = startPos - endPos;
+            direction = endPos - startPos;
             obj.isKinematic = false;
 
-            // Calculate the speed of object
-            CalcObjectSpeed();
+           // If subtraction equals empty Vector2(0f,0f,0f) don't perform force
+            if( !(endPos - startPos).Equals(Vector2.zero) )
+            {
+                // Calculate Object speed
+                CalcObjectSpeed();
 
-            // add force in 3D space (z,y,x)
-            obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * direction.y * powerXY) + (ARCam.transform.right * direction.x * powerXY),ForceMode.Impulse);
+                // Object rotation
+                transform.Rotate(0.0f,0.0f,m_ThrowForce,Space.Self);
+
+                // Add force in 3D space (z,y,x)
+                obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * direction.y * powerY) + 
+                (ARCam.transform.right * direction.x * powerX), ForceMode.Impulse);                
+            }
+
+            // Get temporary touch time
+            if(TouchStart > 0)
+                TouchTemp = Time.time - TouchStart;
+
+            // If suspecting holding, reset start time and position
+            if(TouchTemp > flickSpeed) {
+                TouchStart = Time.time;
+                startPos = Input.GetTouch(0).position;
+            }
         }
     }
     void CalcObjectSpeed()
     {
+        // Flick length
         float flick = direction.magnitude;
-        float ObjectVelocity;
+
+        // Objects velocity
+        float ObjectVelocity = 0;
         
-        if  ( TouchInterval > 0 && !((endPos - startPos).Equals(Vector2.zero)) )
-        {
+        if  ( TouchInterval > 0 )
             ObjectVelocity = flick / ( flick - TouchInterval);
-        }    
+
+          m_ThrowForce = ObjectVelocity * 15;   
     }
 }
