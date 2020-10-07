@@ -180,6 +180,7 @@ GameObject:
   - component: {fileID: 477977133}
   - component: {fileID: 477977132}
   - component: {fileID: 477977136}
+  - component: {fileID: 477977137}
   m_Layer: 0
   m_Name: AR Session Origin
   m_TagString: Untagged
@@ -255,6 +256,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_RaycastPrefab: {fileID: 0}
+--- !u!114 &477977137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 477977131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26e9b3bba40cf1944b54294fbdd90629, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _PlaceableObject: {fileID: 8813061636068576988, guid: 8ef2639cc1153de49b0ca8ad3aee7219, type: 3}
+  debugText: {fileID: 791336672}
 --- !u!1 &504549462
 GameObject:
   m_ObjectHideFlags: 0
@@ -846,7 +861,6 @@ MonoBehaviour:
   SwipeThreshold: 100
   ReferenceDpi: 200
   GuiLayers:
-    serializedVersion: 2
     m_Bits: 4294967291
   RecordFingers: 1
   RecordThreshold: 5

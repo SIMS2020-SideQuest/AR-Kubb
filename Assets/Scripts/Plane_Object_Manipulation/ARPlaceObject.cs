@@ -33,7 +33,7 @@ namespace SIMS.SideQuest.ARKubb
         //public GameObject placementIndicator;
         //private Pose placementPose;
         //private bool placementPoseIsValid = false;
-        private bool isObjectPlaced = false;
+        ///private bool isObjectPlaced = false;
 
         private void Awake(){
             _arRaycastManager = GetComponent<ARRaycastManager>();
@@ -66,6 +66,8 @@ namespace SIMS.SideQuest.ARKubb
 
 
         private void PlaceObject(Pose hitPose){
+            Debug.LogErrorFormat("PlaceObject");
+            Debug.LogErrorFormat("PlaceObjectLog");
             spawnedObject = Instantiate(_PlaceableObject, hitPose.position, hitPose.rotation);
             objectPlaced = true;
             //placementIndicator.SetActive(false);
