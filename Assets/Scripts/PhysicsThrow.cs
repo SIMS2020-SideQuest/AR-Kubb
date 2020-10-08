@@ -27,12 +27,11 @@ public class PhysicsThrow : MonoBehaviour
 
     // Powers in 3D space
     [SerializeField]
-    float powerX = 0.015f, powerY = 0.001f, m_ThrowForce = 0;
+    float powerX = 0.015f, powerY = 0.001f, m_ThrowForce = 0.006f;
 
 
     // Average flick speed
-
-    float flickSpeed = 0.2f;
+    float flickSpeed = 3.2f;
 
     // Time
     float TouchStart, TouchEnd, TouchInterval, TouchTemp;
@@ -90,7 +89,7 @@ public class PhysicsThrow : MonoBehaviour
                 CalcObjectSpeed();
 
                 // Object rotation
-                transform.Rotate(0.0f,0.0f,m_ThrowForce,Space.Self);
+                transform.Rotate(0.0f,0.0f,0.0f,Space.Self);
 
                 // Add force in 3D space (z,y,x)
                 obj.AddForce((transform.forward * m_ThrowForce) + (transform.up * direction.y * powerY) + 
@@ -165,8 +164,11 @@ public class PhysicsThrow : MonoBehaviour
         float ObjectVelocity = 0;
         
         if  ( TouchInterval > 0 )
-            ObjectVelocity = flick / ( flick - TouchInterval);
+            ObjectVelocity = flick / TouchInterval;
+        
 
-          m_ThrowForce = ObjectVelocity * 15;   
+        Debug.Log("Interval: "+TouchInterval);
+        Debug.Log("Velocity: "+ObjectVelocity);
+        m_ThrowForce *= ObjectVelocity;   
     }
 }
