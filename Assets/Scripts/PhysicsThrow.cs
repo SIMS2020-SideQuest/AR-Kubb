@@ -89,11 +89,16 @@ public class PhysicsThrow : MonoBehaviour
                 CalcObjectSpeed();
 
                 // Object rotation
-                transform.Rotate(0.0f,0.0f,0.0f,Space.Self);
+                //transform.Rotate(0.0f,0.0f,m_ThrowForce*-direction.x,Space.Self);
+                //Vector3 targetRotation = new Vector3(obj.position.x,transform.position.y,obj.position.z);
+                //transform.LookAt(targetRotation);
+
 
                 // Add force in 3D space (z,y,x)
                 obj.AddForce((transform.forward * m_ThrowForce) + (transform.up * direction.y * powerY) + 
-                (transform.right * direction.x * powerX), ForceMode.Impulse);                
+                (transform.right * direction.x * powerX), ForceMode.Impulse);
+
+                obj.transform.rotation = Quaternion.LookRotation(obj.velocity);                
             }
 
             // Get temporary touch time
@@ -169,6 +174,7 @@ public class PhysicsThrow : MonoBehaviour
 
         Debug.Log("Interval: "+TouchInterval);
         Debug.Log("Velocity: "+ObjectVelocity);
-        m_ThrowForce *= ObjectVelocity;   
+        m_ThrowForce *= ObjectVelocity;
+        Debug.Log("FOrce: "+m_ThrowForce);   
     }
 }
