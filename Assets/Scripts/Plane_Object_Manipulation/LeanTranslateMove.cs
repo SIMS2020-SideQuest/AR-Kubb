@@ -7,8 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 //SIMS.SideQuest.ARKubb
 namespace Lean.Touch{
-	// This script allows you to transform the current GameObject with smoothing
-	public class LeanTranslateSmooth : MonoBehaviour{
+	public class LeanTranslateMove : MonoBehaviour{
 		[Tooltip("Ignore fingers with StartedOverGui?")]
         public bool IgnoreIfStartedOverGui = false;
  
@@ -27,10 +26,8 @@ namespace Lean.Touch{
 		[Tooltip("How smoothly this object moves to its target position")]
 		public float Dampening = 10.0f;
 		
-		// The position we still need to add
 		[HideInInspector]
 		public Vector3 RemainingDelta;
-
 	
 		#if UNITY_EDITOR
         protected virtual void Reset(){
@@ -57,30 +54,29 @@ namespace Lean.Touch{
 			var factor = LeanTouch.GetDampenFactor(Dampening, Time.deltaTime); //The framerate independent damping factor (-1 = instant)
 			//var factor = 1.0f - Mathf.Exp(-Smoothness * Time.deltaTime); //The framerate independent damping factor (-1 = instant)
 			var newDelta = Vector3.Lerp(RemainingDelta, Vector3.zero, factor); //Linearly interpolates between two vectors
-            Vector3 moveMe = (RemainingDelta - newDelta); //Shift this transform by the change in delta(Atul's change)
-            moveMe.y = 0f;
+            Vector3 moveMe = (RemainingDelta - newDelta); //Shift this transform by the change in delta
+            moveMe.y = 0f;//Turns off movment control in the Y-axis
             transform.position += moveMe;
 			RemainingDelta = newDelta;// Update remainingDelta with the dampened value
 		}
 		
-		protected virtual void TranslateUI(Vector2 screenDelta){// Screen position of the transform
-            var screenPoint = RectTransformUtility.WorldToScreenPoint(Camera, transform.position); // Add the deltaPosition
-            screenPoint += screenDelta; // Convert back to world space
-            var worldPoint = default(Vector3);
+		protected virtual void TranslateUI(Vector2 screenDelta){
+            var screenPoint = RectTransformUtility.WorldToScreenPoint(Camera, transform.position); // Screen position of the transform
+            screenPoint += screenDelta; // Add the deltaPosition
+            var worldPoint = default(Vector3);// Convert back to world space
             if (RectTransformUtility.ScreenPointToWorldPointInRectangle(transform.parent as RectTransform, screenPoint, Camera, out worldPoint) == true){
                 transform.position = worldPoint;
             }
         }
 
         protected virtual void Translate(Vector2 screenDelta){
-            var camera = LeanTouch.GetCamera(Camera, gameObject); // Make sure the camera exists, // If camera is null, try and get the main camera, return true if a camera was found
-            //LeanTouch.GetCamera(Camera) == true
+            var camera = LeanTouch.GetCamera(Camera, gameObject); // Make sure the camera exists
 			if (camera != null){
                 var oldPosition = transform.position; // Store old position
-                var screenPosition = camera.WorldToScreenPoint(oldPosition); // Screen position of the transform
-                screenPosition += (Vector3)screenDelta; // Add the deltaPosition
-                var newPosition = camera.ScreenToWorldPoint(screenPosition); // Convert back to world space
-                RemainingDelta += newPosition - oldPosition; // Add to delta
+                var screenPosition = camera.WorldToScreenPoint(oldPosition); // Transforms position from world space into viewport space.
+                screenPosition += (Vector3)screenDelta; // Add the screen delta
+                var newPosition = camera.ScreenToWorldPoint(screenPosition); // Make the camera render with shader replacement, to world space
+                RemainingDelta += newPosition - oldPosition; // Add to Remaining delta
             }
 			else{
 				Debug.LogError("Failed to find camera.", this);
