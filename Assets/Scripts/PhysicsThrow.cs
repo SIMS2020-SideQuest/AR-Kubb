@@ -36,9 +36,6 @@ public class PhysicsThrow : MonoBehaviour
     // Time
     float TouchStart, TouchEnd, TouchInterval, TouchTemp;
 
-    // Holding object
-    bool holding;
-
     // Start is called before the first frame update
     void Start(){
 
@@ -48,9 +45,9 @@ public class PhysicsThrow : MonoBehaviour
         m_SessionOrigin=GameObject.Find("AR Session Origin").GetComponent<ARSessionOrigin>();
 
         ARCam = m_SessionOrigin.transform.Find("AR Camera").gameObject;
-        transform.parent = ARCam.transform;
-
-        holding = false;
+        //Debug.Log(ARCam);
+        //transform.parent = ARCam.transform;
+        //Debug.Log(transform.position);
     }
 
     // Update is called once per frame
@@ -88,17 +85,8 @@ public class PhysicsThrow : MonoBehaviour
                 // Calculate Object speed
                 CalcObjectSpeed();
 
-                // Object rotation
-                //transform.Rotate(0.0f,0.0f,m_ThrowForce*-direction.x,Space.Self);
-                //Vector3 targetRotation = new Vector3(obj.position.x,transform.position.y,obj.position.z);
-                //transform.LookAt(targetRotation);
-
-
-                // Add force in 3D space (z,y,x)
-                obj.AddForce((transform.forward * m_ThrowForce) + (transform.up * direction.y * powerY) + 
-                (transform.right * direction.x * powerX), ForceMode.Impulse);
-
-                obj.transform.rotation = Quaternion.LookRotation(obj.velocity);                
+                obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * direction.y * powerY) + 
+                (ARCam.transform.right * direction.x * powerX), ForceMode.Impulse);                                
             }
 
             // Get temporary touch time
@@ -172,9 +160,9 @@ public class PhysicsThrow : MonoBehaviour
             ObjectVelocity = flick / TouchInterval;
         
 
-        Debug.Log("Interval: "+TouchInterval);
+        /*Debug.Log("Interval: "+TouchInterval);
         Debug.Log("Velocity: "+ObjectVelocity);
+        Debug.Log("FOrce: "+m_ThrowForce);*/   
         m_ThrowForce *= ObjectVelocity;
-        Debug.Log("FOrce: "+m_ThrowForce);   
     }
 }
