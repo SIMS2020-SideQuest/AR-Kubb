@@ -20,8 +20,23 @@ namespace SIMS.SideQuest.ARKubb{
 
         //Waits for backbutton on phone to be pressed
         void Update(){
-            if (Input.GetKeyDown(KeyCode.Escape))
-                BackButtonPressed();
+            //Current scene.
+            Scene currentScene = SceneManager.GetActiveScene ();
+
+            // Name of the current scene.
+            string sceneName = currentScene.name;
+            if(sceneName != "Menu"){
+                if (Input.GetKeyDown(KeyCode.Escape))
+                    BackButtonPressed();
+            }
+            else{
+                if(Input.GetKeyDown(KeyCode.Escape)) 
+                    Application.Quit(); 
+            }
+        }
+
+        public void ExitApplication(){
+            Application.Quit();
         }
 
         public void BackButtonPressed(){
