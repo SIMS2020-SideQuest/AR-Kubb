@@ -45,9 +45,8 @@ public class PhysicsThrow : MonoBehaviour
         m_SessionOrigin=GameObject.Find("AR Session Origin").GetComponent<ARSessionOrigin>();
 
         ARCam = m_SessionOrigin.transform.Find("AR Camera").gameObject;
-        //Debug.Log(ARCam);
-        //transform.parent = ARCam.transform;
-        //Debug.Log(transform.position);
+
+        //transform.position = ARCam.transform.position;
     }
 
     // Update is called once per frame
@@ -86,7 +85,8 @@ public class PhysicsThrow : MonoBehaviour
                 CalcObjectSpeed();
 
                 obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * direction.y * powerY) + 
-                (ARCam.transform.right * direction.x * powerX), ForceMode.Impulse);                                
+                (ARCam.transform.right * direction.x * powerX), ForceMode.Impulse); 
+                               
             }
 
             // Get temporary touch time
@@ -128,9 +128,6 @@ public class PhysicsThrow : MonoBehaviour
             {
                 // Calculate Object speed
                 CalcObjectSpeed();
-
-                // Object rotation
-                transform.Rotate(0.0f,0.0f,m_ThrowForce,Space.Self);
 
                 // Add force in 3D space (z,y,x)
                 obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * direction.y * powerY) + 
