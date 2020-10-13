@@ -31,7 +31,7 @@ public class PhysicsThrow : MonoBehaviour
 
     // Powers in 3D space
     [SerializeField]
-    float powerX = 1f, powerY = 1f, m_ThrowForce = 2f;
+    float powerX = 3f, powerY = 2f, m_ThrowForce = 2f;
 
 
     // Average flick speed
@@ -138,11 +138,12 @@ public class PhysicsThrow : MonoBehaviour
                 // Calculate Object speed
                 CalcObjectSpeed();
 
-                // Add force in 3D space (z,y,x)
-                //obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * direction.y * powerY) + 
-                //(ARCam.transform.right * direction.x * powerX), ForceMode.Impulse);      
-                obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * -direction.y) + 
-                (ARCam.transform.right * -direction.x), ForceMode.Impulse);               
+                // Add force in 3D space (z,y,x)     
+                obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * -direction.y * powerY) + 
+                (ARCam.transform.right * -direction.x * powerX), ForceMode.Impulse);               
+
+                // Add rotation to object
+                objectRotation();
 
                 Destroy (obj, 3f);
             }
@@ -180,5 +181,11 @@ public class PhysicsThrow : MonoBehaviour
         Debug.Log("Velocity: "+ObjectVelocity);
         Debug.Log("FOrce: "+m_ThrowForce);   
         m_ThrowForce *= ObjectVelocity;
+    }
+
+    private void objectRotation()
+    {
+        var rotation = Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(-direction),Time.deltaTime*m_ThrowForce);
+        transform.rotation = rotation;
     }
 }
