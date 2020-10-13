@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 380685955962454474}
   - component: {fileID: 380685955962454475}
   - component: {fileID: 380685955962454472}
-  - component: {fileID: 380685955962454473}
   - component: {fileID: 380685955962454470}
   m_Layer: 0
   m_Name: Throwingstick
@@ -115,20 +114,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &380685955962454473
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 380685955962454468}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 695946210069976194, guid: fed26ad9dac0a6244a2792b3afc38793, type: 3}
 --- !u!114 &380685955962454470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,6 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ARCam: {fileID: 0}
+  debugText: {fileID: 0}
   m_SessionOrigin: {fileID: 0}
   powerX: 0.015
   powerY: 0.001
