@@ -20,8 +20,8 @@ public class objectCollision : MonoBehaviour
         
     }
 
-    void OnCollisionEnter(Collision collosion)
+    void OnCollisionEnter(Collision collider)
     {
-        
+        Debug.Log(collider.collider.name);
     }
 }
