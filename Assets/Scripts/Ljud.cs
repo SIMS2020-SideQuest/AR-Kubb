@@ -6,33 +6,23 @@ using UnityEditor;
 public class Ljud : MonoBehaviour
 {
  
-    public GameObject audioOnIcon;
+    public GameObject audioOnIcon; // skapae flikarna i Unity som vi kan lägga våra bilder på on/off iconen i
     public GameObject audioOffIcon;
 
  
     // Use this for initialization
     void Start () 
     {
-        SetSoundState ();
+        SetSoundState (); //kollar funtionen direkt när spelet startas
  
     }
  
-    // Update is called once per frame
-    void Update () 
+   
+    public void ToggleSound()
     {
-        
-    }
-    
-    public void StartGame()
-    {
-
-    }
- 
-    private void ToggleSound()
-    {
-        if (PlayerPrefs.GetInt ("Muted", 0) == 0) 
+        if (PlayerPrefs.GetInt ("Muted", 0) == 0) //PlayerPrefs sparar inställningarna som spelaren vill ha på sitt spel. Om det aldrig har gjort något val gällande musiken så kommer den automatsikt börja på 0 vilket är inte muted.
         {
-            PlayerPrefs.SetInt ("Muted", 1);
+            PlayerPrefs.SetInt ("Muted", 1); // om den är på 0 om man klickar på knappen går den till 1 tvärtom
         }
         else
         {
@@ -40,24 +30,24 @@ public class Ljud : MonoBehaviour
             PlayerPrefs.SetInt ("Muted", 0);
         }
  
-        SetSoundState();
+        SetSoundState(); //kallar på funktionen efter varje klick på knappen
     }
  
-    public void SetSoundState()
+    private void SetSoundState() // mute off/on
     {
-        if (PlayerPrefs.GetInt ("Muted", 0) == 0)
+        if (PlayerPrefs.GetInt ("Muted", 0) == 0) //spelet börjar alltid första gången med musiken spelandes.
         {
      
-            AudioListener.volume = 1;
-            audioOnIcon.SetActive (true);
-            audioOffIcon.SetActive (false);
-        }
+            AudioListener.volume = 1;  // innebär ljudet är på
+            audioOnIcon.SetActive (true);  // visar on bilden
+            audioOffIcon.SetActive (false); // Gömmeroff bilden
+        } 
                 else
         {
      
-            AudioListener.volume = 0;
-            audioOnIcon.SetActive (false);
-            audioOffIcon.SetActive (true);
+            AudioListener.volume = 0;  // innebär ljud är av
+            audioOnIcon.SetActive (false); // Gömmer on bilden
+            audioOffIcon.SetActive (true); // visar off bilden
         }
     }
 }
