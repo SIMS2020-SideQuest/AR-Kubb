@@ -6,15 +6,19 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using Debug = UnityEngine.Debug;
+
 
 [RequireComponent(typeof(Rigidbody))]
 public class PhysicsThrow : MonoBehaviour
 {
     [SerializeField]
     GameObject ARCam;
+
+    public GameObject debugText;
 
     [SerializeField]
     ARSessionOrigin m_SessionOrigin;
@@ -27,18 +31,14 @@ public class PhysicsThrow : MonoBehaviour
 
     // Powers in 3D space
     [SerializeField]
-    float powerX = 0.015f, powerY = 0.001f, m_ThrowForce = 0;
+    float powerX = 3f, powerY = 2f, m_ThrowForce = 2f;
 
 
     // Average flick speed
-
-    float flickSpeed = 0.2f;
+    float flickSpeed = 0.8f;
 
     // Time
     float TouchStart, TouchEnd, TouchInterval, TouchTemp;
-
-    // Holding object
-    bool holding;
 
     // Start is called before the first frame update
     void Start(){
@@ -49,16 +49,15 @@ public class PhysicsThrow : MonoBehaviour
         m_SessionOrigin=GameObject.Find("AR Session Origin").GetComponent<ARSessionOrigin>();
 
         ARCam = m_SessionOrigin.transform.Find("AR Camera").gameObject;
-        transform.parent = ARCam.transform;
 
-        holding = false;
+        //transform.position = ARCam.transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        if(Input.GetMouseButtonDown(0)) {
+        //DebugTextFunction("ARCAM" + ARCam.transform.position);
+        /*if(Input.GetMouseButtonDown(0)) {
 
             // Record start time of swipe
             TouchStart = Time.time;
@@ -89,12 +88,9 @@ public class PhysicsThrow : MonoBehaviour
                 // Calculate Object speed
                 CalcObjectSpeed();
 
-                // Object rotation
-                transform.Rotate(0.0f,0.0f,m_ThrowForce,Space.Self);
-
-                // Add force in 3D space (z,y,x)
-                obj.AddForce((transform.forward * m_ThrowForce) + (transform.up * direction.y * powerY) + 
-                (transform.right * direction.x * powerX), ForceMode.Impulse);                
+                obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * direction.y * powerY) + 
+                (ARCam.transform.right * direction.x * powerX), ForceMode.Impulse); 
+                               
             }
 
             // Get temporary touch time
@@ -107,12 +103,14 @@ public class PhysicsThrow : MonoBehaviour
                 startPos = Input.mousePosition;
             }    
         }
+        */
 
         // Checks whether screen is touched
         if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             TouchStart = Time.time;
-            startPos = Input.GetTouch(0).position;
+            //startPos = Input.GetTouch(0).position;
+            startPos = Camera.main.ScreenToViewportPoint(Input.GetTouch(0).position);
         }
 
         // If finger is released
@@ -125,10 +123,13 @@ public class PhysicsThrow : MonoBehaviour
             TouchInterval = TouchEnd - TouchStart;
 
             // get position of finger release
-            endPos = Input.GetTouch(0).position;
+            //endPos = Input.GetTouch(0).position;
+            endPos = Camera.main.ScreenToViewportPoint(Input.GetTouch(0).position);
 
             // Calculate direction of object in 2D plane
-            direction = endPos - startPos;
+            //direction = endPos - startPos;
+            direction = startPos - endPos;
+            
             obj.isKinematic = false;
 
            // If subtraction equals empty Vector2(0f,0f,0f) don't perform force
@@ -137,12 +138,14 @@ public class PhysicsThrow : MonoBehaviour
                 // Calculate Object speed
                 CalcObjectSpeed();
 
-                // Object rotation
-                transform.Rotate(0.0f,0.0f,m_ThrowForce,Space.Self);
+                // Add force in 3D space (z,y,x)     
+                obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * -direction.y * powerY) + 
+                (ARCam.transform.right * -direction.x * powerX), ForceMode.Impulse);               
 
-                // Add force in 3D space (z,y,x)
-                obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * direction.y * powerY) + 
-                (ARCam.transform.right * direction.x * powerX), ForceMode.Impulse);                
+                // Add rotation to object
+                objectRotation();
+
+                Destroy (obj, 3f);
             }
 
             // Get temporary touch time
@@ -152,11 +155,17 @@ public class PhysicsThrow : MonoBehaviour
             // If suspecting holding, reset start time and position
             if(TouchTemp > flickSpeed) {
                 TouchStart = Time.time;
-                startPos = Input.GetTouch(0).position;
+                startPos = Camera.main.ScreenToViewportPoint(Input.GetTouch(0).position);
+                DebugTextFunction("TouchTemp: " + TouchTemp);
             }
         }
     }
-    void CalcObjectSpeed()
+
+    public void DebugTextFunction(string outputtext){
+        //Debug.LogErrorFormat("ERROR");
+        debugText.GetComponent<Text>().text = outputtext;
+    }
+    private void CalcObjectSpeed()
     {
         // Flick length
         float flick = direction.magnitude;
@@ -165,8 +174,18 @@ public class PhysicsThrow : MonoBehaviour
         float ObjectVelocity = 0;
         
         if  ( TouchInterval > 0 )
-            ObjectVelocity = flick / ( flick - TouchInterval);
+            ObjectVelocity = flick / TouchInterval;
+        
 
-          m_ThrowForce = ObjectVelocity * 15;   
+        Debug.Log("Interval: "+TouchInterval);
+        Debug.Log("Velocity: "+ObjectVelocity);
+        Debug.Log("FOrce: "+m_ThrowForce);   
+        m_ThrowForce *= ObjectVelocity;
+    }
+
+    private void objectRotation()
+    {
+        var rotation = Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(-direction),Time.deltaTime*m_ThrowForce);
+        transform.rotation = rotation;
     }
 }
