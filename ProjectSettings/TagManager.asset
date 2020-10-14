@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - pause
+  - music
+  - muted
+  - Muted
   layers:
   - Default
   - TransparentFX

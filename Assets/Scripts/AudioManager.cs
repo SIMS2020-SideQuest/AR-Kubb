@@ -4,31 +4,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
  
-public class AudioManager : MonoBehaviour {
+public class AudioManager : MonoBehaviour 
+{
  
-        public AudioSource BGM;
- 
-    // Use this for initialization
-    void Start () 
+    void Awake () //startar så fort spelet startar
     {
-             DontDestroyOnLoad (gameObject); // Förklarar att vi ej vill förstöra scriptet när vi går över till en ny scen, vi vill alltså att den ska fortsätta köras.
-    }
- 
-    // Update is called once per frame
-    void Update () 
-    {
- 
-      ///   public void ChangeBGM (AudioClip music)
-     ///   {
-        ///        if (BGM.clip.name == music.name)
-           ///             return;
-     ///
-        ///        BGM.Stop();
-           ///     BGM.clip = music;
-              ///  BGM.Play();
-        }
-        
-        
+    
+        GameObject[] objs = GameObject.FindGameObjectsWithTag("music");
+        if(objs.Length > 1)
+            Destroy(this.gameObject); // Räknar hur många music taggar den hittar i scenen och om det är mer än 1 så förstör en de som är fler, vi har denna pga om man går in i spelt och sedan trycker tillbaka så kommer bgm spelar dubbelt då det finns två st.
+            
+         DontDestroyOnLoad(this.gameObject); // Om det inte är mer än 1 music tag hittat så fortsätter den att utan avbrytan spela våran musik även när scener bytts.
     }
  
        
