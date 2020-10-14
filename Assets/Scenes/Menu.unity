@@ -1253,7 +1253,7 @@ GameObject:
   - component: {fileID: 1437770607}
   m_Layer: 0
   m_Name: AudioManager
-  m_TagString: Untagged
+  m_TagString: music
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1380,7 +1380,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a233aa4d4ba2a4c5696b135ee82648a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BGM: {fileID: 1437770605}
 --- !u!1001 &1445012114
 PrefabInstance:
   m_ObjectHideFlags: 0
