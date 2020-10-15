@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class objectCollision : MonoBehaviour
 {
-    Rigidbody obj;
+    public Rigidbody obj;
 
+    float kubbRotation;
+
+    bool hit = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,11 +20,19 @@ public class objectCollision : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //if(hit)
+          //  Debug.Log("Euler: "+gameObject.transform.eulerAngles.x);
     }
 
     void OnCollisionEnter(Collision collider)
     {
-        Debug.Log(collider.collider.name);
+        obj.useGravity = true;
+
+        // Fetch rotation of object in Degrees
+        kubbRotation = gameObject.transform.eulerAngles.x;
+
+        // Prevent only touched objects to be deleted
+        if(kubbRotation < 70)
+            Destroy(gameObject, 3);
     }
 }

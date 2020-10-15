@@ -57,41 +57,45 @@ public class PhysicsThrow : MonoBehaviour
     void Update()
     {
         //DebugTextFunction("ARCAM" + ARCam.transform.position);
-        /*if(Input.GetMouseButtonDown(0)) {
+        if(Input.GetMouseButtonDown(0)) {
 
-            // Record start time of swipe
             TouchStart = Time.time;
 
-            // Get mouse position of swipe
-            startPos = Input.mousePosition;
+            startPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
         }
 
         if(Input.GetMouseButtonUp(0)) {
             
-            // Record end time of swipe ended
+            // Assigning time where touch/swipe ended
             TouchEnd = Time.time;
-            
-            // Swipe interval
+
+            // Get touch interval
             TouchInterval = TouchEnd - TouchStart;
 
-            // Mouse position of end swipe
-            endPos = Input.mousePosition;
+            // get position of finger release
+            //endPos = Input.GetTouch(0).position;
+            endPos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
 
-            // Get 2D direction of swipe
-            direction = endPos - startPos;
-
-            obj.isKinematic = false;
+            // Calculate direction of object in 2D plane
+            //direction = endPos - startPos;
+            direction = startPos - endPos;
             
-            // If subtraction equals empty Vector2(0f,0f,0f) don't perform force
+            obj.isKinematic = false;
+
+           // If subtraction equals empty Vector2(0f,0f,0f) don't perform force
             if( !(endPos - startPos).Equals(Vector2.zero) )
             {
                 // Calculate Object speed
                 CalcObjectSpeed();
 
-                obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * direction.y * powerY) + 
-                (ARCam.transform.right * direction.x * powerX), ForceMode.Impulse); 
-                               
-            }
+                // Add force in 3D space (z,y,x)     
+                obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * -direction.y * powerY) + 
+                (ARCam.transform.right * -direction.x * powerX), ForceMode.Impulse);               
+
+                // Add rotation to object
+                objectRotation();
+
+                Destroy (obj, 3f);
 
             // Get temporary touch time
             if(TouchStart > 0)
@@ -103,10 +107,27 @@ public class PhysicsThrow : MonoBehaviour
                 startPos = Input.mousePosition;
             }    
         }
-        */
+   void CalcObjectSpeed()
+    {
+        // Flick length
+        float flick = direction.magnitude;
 
+        // Objects velocity
+        float ObjectVelocity = 0;
+        
+        if  ( TouchInterval > 0 )
+            ObjectVelocity = flick / TouchInterval;
+        
+        m_ThrowForce *= ObjectVelocity;
+    }
+
+    void objectRotation()
+    {
+        var rotation = Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(-direction),Time.deltaTime*m_ThrowForce);
+        transform.rotation = rotation;
+    }
         // Checks whether screen is touched
-        if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        /*if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             TouchStart = Time.time;
             //startPos = Input.GetTouch(0).position;
@@ -159,33 +180,13 @@ public class PhysicsThrow : MonoBehaviour
                 DebugTextFunction("TouchTemp: " + TouchTemp);
             }
         }
-    }
-
-    public void DebugTextFunction(string outputtext){
+        */
+    /*public void DebugTextFunction(string outputtext){
         //Debug.LogErrorFormat("ERROR");
         debugText.GetComponent<Text>().text = outputtext;
     }
-    private void CalcObjectSpeed()
-    {
-        // Flick length
-        float flick = direction.magnitude;
-
-        // Objects velocity
-        float ObjectVelocity = 0;
-        
-        if  ( TouchInterval > 0 )
-            ObjectVelocity = flick / TouchInterval;
-        
-
-        Debug.Log("Interval: "+TouchInterval);
-        Debug.Log("Velocity: "+ObjectVelocity);
-        Debug.Log("FOrce: "+m_ThrowForce);   
-        m_ThrowForce *= ObjectVelocity;
-    }
-
-    private void objectRotation()
-    {
-        var rotation = Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(-direction),Time.deltaTime*m_ThrowForce);
-        transform.rotation = rotation;
+    */
+ 
+}
     }
 }
