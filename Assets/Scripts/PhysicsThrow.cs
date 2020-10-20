@@ -11,12 +11,12 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using Debug = UnityEngine.Debug;
 
-
-[RequireComponent(typeof(Rigidbody))]
 public class PhysicsThrow : MonoBehaviour
 {
     [SerializeField]
     GameObject ARCam;
+
+    GameObject stick;
 
     public GameObject debugText;
 
@@ -33,12 +33,17 @@ public class PhysicsThrow : MonoBehaviour
     [SerializeField]
     float powerX = 3f, powerY = 2f, m_ThrowForce = 2f;
 
-
     // Average flick speed
     float flickSpeed = 0.8f;
 
     // Time
     float TouchStart, TouchEnd, TouchInterval, TouchTemp;
+
+    float ObjectVelocity = 0;
+
+    Vector3 spawnPos;
+
+    Quaternion startRot;
 
     // Start is called before the first frame update
     void Start(){
@@ -50,7 +55,9 @@ public class PhysicsThrow : MonoBehaviour
 
         ARCam = m_SessionOrigin.transform.Find("AR Camera").gameObject;
 
-        //transform.position = ARCam.transform.position;
+        spawnPos = transform.position;
+
+        startRot = transform.rotation;
     }
 
     // Update is called once per frame
@@ -81,6 +88,7 @@ public class PhysicsThrow : MonoBehaviour
             direction = startPos - endPos;
             
             obj.isKinematic = false;
+            
 
            // If subtraction equals empty Vector2(0f,0f,0f) don't perform force
             if( !(endPos - startPos).Equals(Vector2.zero) )
@@ -88,44 +96,31 @@ public class PhysicsThrow : MonoBehaviour
                 // Calculate Object speed
                 CalcObjectSpeed();
 
-                // Add force in 3D space (z,y,x)     
-                obj.AddForce((ARCam.transform.forward * m_ThrowForce) + (ARCam.transform.up * -direction.y * powerY) + 
-                (ARCam.transform.right * -direction.x * powerX), ForceMode.Impulse);               
-
                 // Add rotation to object
                 objectRotation();
 
-                Destroy (obj, 3f);
+                // Add force in 3D space (z,y,x)     
+                obj.AddForce((ARCam.transform.forward * m_ThrowForce * ObjectVelocity) + (ARCam.transform.up * -direction.y * powerY) + 
+                (ARCam.transform.right * -direction.x * powerX), ForceMode.Impulse);
 
+                obj.useGravity = true;               
+
+                // Reset object
+                Invoke("resetObject", time: 3f);    
+            }
             // Get temporary touch time
             if(TouchStart > 0)
                 TouchTemp = Time.time - TouchStart;
 
             // If suspecting holding, reset start time and position
             if(TouchTemp > flickSpeed) {
+
                 TouchStart = Time.time;
+
                 startPos = Input.mousePosition;
-            }    
+
+            }
         }
-   void CalcObjectSpeed()
-    {
-        // Flick length
-        float flick = direction.magnitude;
-
-        // Objects velocity
-        float ObjectVelocity = 0;
-        
-        if  ( TouchInterval > 0 )
-            ObjectVelocity = flick / TouchInterval;
-        
-        m_ThrowForce *= ObjectVelocity;
-    }
-
-    void objectRotation()
-    {
-        var rotation = Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(-direction),Time.deltaTime*m_ThrowForce);
-        transform.rotation = rotation;
-    }
         // Checks whether screen is touched
         /*if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
@@ -166,7 +161,7 @@ public class PhysicsThrow : MonoBehaviour
                 // Add rotation to object
                 objectRotation();
 
-                Destroy (obj, 3f);
+                //Destroy (obj, 3f);
             }
 
             // Get temporary touch time
@@ -180,13 +175,35 @@ public class PhysicsThrow : MonoBehaviour
                 DebugTextFunction("TouchTemp: " + TouchTemp);
             }
         }
-        */
-    /*public void DebugTextFunction(string outputtext){
-        //Debug.LogErrorFormat("ERROR");
-        debugText.GetComponent<Text>().text = outputtext;
+        */    
+    }    
+   void CalcObjectSpeed()
+    {
+        // Flick length
+        float flick = direction.magnitude;
+        
+        if  ( TouchInterval > 0 )
+            ObjectVelocity = flick / TouchInterval;
     }
-    */
- 
-}
+
+    void objectRotation()
+    {
+        var rotation = Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(-direction),Time.deltaTime*m_ThrowForce);
+        transform.rotation = rotation;
+    }
+
+    private void resetObject()
+    {
+        //Vector3 SpawnPos = new Vector3(oTransform.position.x, oTransform.position.y, oTransform.position.z + 0.0178f);
+        Debug.Log("Z: "+ARCam.transform.position.z);
+        Vector3 resetPos = new Vector3(ARCam.transform.position.x,ARCam.transform.position.y/6,ARCam.transform.position.z + 0.1422f);
+
+        obj.useGravity = false;
+
+        obj.velocity = Vector3.zero;
+
+        transform.position = resetPos;
+
+        transform.rotation = startRot;
     }
 }
